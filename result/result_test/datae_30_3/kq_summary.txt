@@ -1,0 +1,4 @@
+Average time: 418.0966
+Average mep: 0.007890537797650846
+Best value: 0.007858972990781372
+Best run: 1
