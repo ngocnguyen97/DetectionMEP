@@ -1,8 +1,8 @@
 package main;
 
 public class Config {
-	public static final int NUM_RUN = 50;
-	public static final int GENERATION_NUM = 100;
+	public static final int NUM_RUN = 20;
+	public static final int GENERATION_NUM = 250;
 	public static final int POPSIZE = 2000;
 	public static final double P_CROSSOVER = 0.9;
 	public static final double P_CROSSOVER1 = 0.8;

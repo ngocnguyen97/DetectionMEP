@@ -1,7 +1,9 @@
 package main;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.List;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -44,13 +46,13 @@ public class Main {
 				String convergence = "Convergence\n";
 				double t1 = System.currentTimeMillis();
 				p.initializeRandomStart();
-				drawPop(p, topo);
+				//drawPop(p, topo);
 				p.calFitness(topo);
 				p.sort();
 
 				Individual bestIndividual = p.getIndividualByIndex(0);
 				convergence += bestIndividual.getFitness() + "\n";
-				int noBetter = 0;
+				//int noBetter = 0;
 				for (int i = 0; i < Config.GENERATION_NUM; ++i) {
 					try {
 						Population offs = p.evolve(topo);
@@ -58,9 +60,9 @@ public class Main {
 						p = p.mergeSort(offs);
 						if (p.getIndividualByIndex(0).getFitness() < bestIndividual.getFitness()) {
 							bestIndividual = p.getIndividualByIndex(0);
-							noBetter = 0;
+							//noBetter = 0;
 						} else {
-							++noBetter;
+							//++noBetter;
 						}
 						if (Double.compare(bestIndividual.getFitness(), 0.0) == 0) {
 							System.out.println("Found Optimal solution");
@@ -68,7 +70,7 @@ public class Main {
 						}
 						convergence += bestIndividual.getFitness() + "\n";
 						System.out.println(bestIndividual.getFitness());
-						// draw(bestIndividual, topo, input + "vdd.png", i);
+						//draw(bestIndividual, topo, input + "vdd.png", i);
 					} catch (CloneNotSupportedException e) {
 					}
 				}
@@ -91,27 +93,31 @@ public class Main {
 		// }
 	}
 
-	public static void drawLine(Graphics g, int a, int b, int c, int d) {
+	public static void drawLine(Graphics g, int a, int b, int c, int d, float stroke) {
+		((Graphics2D)g).setStroke(new BasicStroke(stroke));
 		g.drawLine(a + 20, b + 20, c + 20, d + 20);
 	}
 
 	public static void draw(Individual indi, Topo topo, String filename, int ir) {
 		filename = filename.replaceFirst("data/data", "result/result_");
 		filename = filename.replaceFirst("\\.", "/lan_" + ir + "\\.");
+		File f1 = new File(filename).getParentFile();
+		if (!f1.exists())
+			f1.mkdirs();
 		Graphics g = bitmap.getGraphics();
 		int W = (int) Config.W;
 		int H = (int) Config.H;
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, W + 40, H + 40);
 
-		g.setColor(Color.BLUE);
-		for (int i = 0; i < topo.getNumNode(); i++) {
-			Point p = topo.getSensorByIndex(i);
-			g.fillArc((int) ((p.getX() - Config.Rs) + 20), (int) ((H - p.getY() - Config.Rs) + 20),
-					(int) (2 * Config.Rs), (int) (2 * Config.Rs), -180, 360);
-		}
+//		g.setColor(Color.BLUE);
+//		for (int i = 0; i < topo.getNumNode(); i++) {
+//			Point p = topo.getSensorByIndex(i);
+//			g.fillArc((int) ((p.getX() - Config.Rs) + 20), (int) ((H - p.getY() - Config.Rs) + 20),
+//					(int) (2 * Config.Rs), (int) (2 * Config.Rs), -180, 360);
+//		}
 
-		g.setColor(Color.MAGENTA);
+		g.setColor(new Color(0x1a, 0x23, 0x7e));
 		for (int i = 0; i < topo.getNumNode(); i++) {
 			Point p = topo.getSensorByIndex(i);
 			g.fillArc((int) ((p.getX() - 3) + 20), (int) ((H - p.getY() - 3) + 20), (int) (2 * 3), (int) (2 * 3), -180,
@@ -119,24 +125,24 @@ public class Main {
 		}
 
 		// ve toa do
-		g.setColor(Color.MAGENTA);
+		g.setColor(new Color(0x26, 0x32, 0x38));
 		for (int i = 0; i <= H / 100; i++)
 			g.drawString(String.valueOf(i * 100), 20, (H - i * 100) + 20);
 		for (int i = 1; i <= W / 100; i++)
-			g.drawString(String.valueOf(i * 100), i * 100 + 20, H + 20);
+			g.drawString(String.valueOf(i * 100), i * 100 + 20, H + 18);
 		// ve bounds
 		g.setColor(Color.BLACK);
-		drawLine(g, 0, 0, 0, H);
-		drawLine(g, W, 0, W, H);
-		drawLine(g, 0, 0, W, 0);
-		drawLine(g, 0, W, W, W);
+		drawLine(g, 0, 0, 0, H, 2f);
+		drawLine(g, W, 0, W, H, 2f);
+		drawLine(g, 0, 0, W, 0, 2f);
+		drawLine(g, 0, W, W, W, 2f);
 		// Ve ketqua
 		g.setColor(Color.RED);
 		Iterator<Point> iter = indi.getListGene().iterator();
 		Point po = iter.next();
 		while (iter.hasNext()) {
 			Point p1 = iter.next();
-			drawLine(g, (int) (po.getX()), (int) (H - po.getY()), (int) (p1.getX()), (int) (H - p1.getY()));
+			drawLine(g, (int) (po.getX()), (int) (H - po.getY()), (int) (p1.getX()), (int) (H - p1.getY()), 2.5f);
 			po = p1;
 		}
 		// Ve minExp
@@ -167,17 +173,17 @@ public class Main {
 		}
 
 		// ve toa do
-		g.setColor(Color.MAGENTA);
+		g.setColor(Color.BLACK);
 		for (int i = 0; i <= H / 100; i++)
 			g.drawString(String.valueOf(i * 100), 20, (H - i * 100) + 20);
 		for (int i = 1; i <= W / 100; i++)
 			g.drawString(String.valueOf(i * 100), i * 100 + 20, H + 20);
 		// ve bounds
 		g.setColor(Color.BLACK);
-		drawLine(g, 0, 0, 0, H);
-		drawLine(g, W, 0, W, H);
-		drawLine(g, 0, 0, W, 0);
-		drawLine(g, 0, W, W, W);
+		drawLine(g, 0, 0, 0, H, 1);
+		drawLine(g, W, 0, W, H, 1);
+		drawLine(g, 0, 0, W, 0, 1);
+		drawLine(g, 0, W, W, W, 1);
 		// Ve ketqua
 		g.setColor(Color.RED);
 		for (int i = 0; i < pop.getSize(); i++) {
@@ -186,7 +192,7 @@ public class Main {
 			Point po = iter.next();
 			while (iter.hasNext()) {
 				Point p1 = iter.next();
-				drawLine(g, (int) (po.getX()), (int) (H - po.getY()), (int) (p1.getX()), (int) (H - p1.getY()));
+				drawLine(g, (int) (po.getX()), (int) (H - po.getY()), (int) (p1.getX()), (int) (H - p1.getY()), 1);
 				po = p1;
 			}
 		}
